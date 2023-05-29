@@ -23,6 +23,7 @@ def read_pdf(pdf_file_path,pag):
     pagine = len(pdf_reader.pages)
     for page_num in range(pag,pagine,1):
         try:
+            testo_tmp = ""
             # Extract the text from the page
             page_text = pdf_reader.pages[page_num].extract_text().lower()
             print(f"pagina {page_num}/{pagine}")
@@ -41,13 +42,15 @@ def read_pdf(pdf_file_path,pag):
                 except Exception as e:
                     print(e)
                     time.sleep(60)  # Aspetta per 60 secondi
-            pdf_summary_text+=page_summary + "\n\n\n"
+            testo_tmp+="PAGINA: " + str(page_num) + "\n" + page_summary + "\n\n\n"
+            pdf_summary_text += testo_tmp
             pdf_summary_file = pdf_file_path.replace(os.path.splitext(pdf_file_path)[1], "_summary.txt")
-            if pag == 0:
-                with open(pdf_summary_file, "w+", encoding="utf-8") as file:
-                    file.write(pdf_summary_text)
-            elif page_num> 0 or pag > 0:
+
+            if page_num> 0 or pag > 0:
                 with open(pdf_summary_file, "a+", encoding="utf-8") as file:
+                    file.write(testo_tmp)
+            elif pag == 0:
+                with open(pdf_summary_file, "w+", encoding="utf-8") as file:
                     file.write(pdf_summary_text)
             i+=1
         except Exception as e:
@@ -136,7 +139,7 @@ if __name__=='__main__':
         if riprendi == 'S':
             pag = int(input('write here the page where you want to start-----> '))
         
-        pdf_file_path = input("write the PDF file path(add .pdf in the end if your file does not have it)-----> ")
+        pdf_file_path = input("write the PDF file path(add .pdf in the endif your file does not have it)-----> ")
         read_pdf(pdf_file_path,pag)
     elif selezione == '3':
         URL = input("paste your URL here----> ").strip()
