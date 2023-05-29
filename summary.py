@@ -136,7 +136,7 @@ if __name__=='__main__':
         if riprendi == 'S':
             pag = int(input('write here the page where you want to start-----> '))
         
-        pdf_file_path = input("write the PDF file path(add .pdf in the endif your file does not have it)-----> ")
+        pdf_file_path = input("write the PDF file path(add .pdf in the end if your file does not have it)-----> ")
         read_pdf(pdf_file_path,pag)
     elif selezione == '3':
         URL = input("paste your URL here----> ").strip()
