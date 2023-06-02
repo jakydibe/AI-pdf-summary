@@ -51,7 +51,7 @@ def gpt_3(prompt):
 #questo usa davinci che e' piu' accurato
 def gpt_31(prompt):
     response = openai.Completion.create(
-        model="text-davinci-001",
+        model="text-davinci-003",
         prompt=prompt,
         temperature=0,
         max_tokens=700,
@@ -60,6 +60,22 @@ def gpt_31(prompt):
         presence_penalty=0,
     )
     text = response['choices'][0]['text'].strip()
+    return text
+    
+def gpt_32(chunk):
+    while true:
+        try:
+            response = openai.ChatCompletion.create(
+                            model="gpt-3.5-turbo",
+                            messages=[
+                                {"role": "system", "content": "You are a helpful research assistant."},
+                                {"role": "user", "content": f"Scrivi un riassunto conciso e in italiano del seguente: {chunk}"},
+                                    ],
+                                        )
+            text = response['choices'][0]['message']["content"]
+        except Exception as e:
+            print(e)
+            time.sleep(35)
     return text
     
 def read_pdf(pdf_file_path):
@@ -86,10 +102,10 @@ if __name__ == '__main__':
     try:
         #convert_pdf2txt('PDFs/','textPDF/')
         
-        alltext = read_pdf('your-pdf-path')
+        alltext = read_pdf('C:/Users/jakyd/Desktop/OneDrive/Desktop/gpt-summarizer-main/PDFs/Che stile... di vita - Ricciardi Jole.pdf')
         
         #la nostra path_folder
-        #pathfolder = 'your-path'
+        #pathfolder = 'C:/sers/jakyd/Desktop/OneDrive/Desktop/gpt-summarizer-main/textPDF'
         
         #prendi una lista dei file di testo creati dai pdf
         #files = glob.glob(f"{pathfolder}/*.txt")
@@ -101,7 +117,7 @@ if __name__ == '__main__':
             # with open(file, 'r', encoding='utf-8') as infile: #apri er file
                 # alltext += infile.read()
         
-        chunks = textwrap.wrap(alltext,2500)
+        chunks = textwrap.wrap(alltext,3000)
         result = list()
         count = 0
         
@@ -112,11 +128,13 @@ if __name__ == '__main__':
         for chunk in chunks:
             try:
                 count = count + 1
-                prompt = open_file('prompt.txt').replace('<<SUMMARY>>', chunk)
+                prompt = open_file('promptitaliano.txt').replace('<<SUMMARY>>', chunk)
                 prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
-                summary = gpt_3(prompt)
+                
+                #se si chiama qualche altro modello sostituire chunk con prompt
+                summary = gpt_32(chunk)
                 print('\n\n\n', count, 'out of', len(chunks), 'Compressions', ' : ', summary)
-                summary = '\n'+ str(count) + '/' + str(len(chunks)) + '  page' + '\n' + summary
+                summary = '\n'+ str(count) + '/' + str(len(chunks)) + '  parte' + '\n' + summary
                 result.append(summary)
                 save_file("pdfsummary.txt", '\n\n'.join(result))
             except Exception as e:
